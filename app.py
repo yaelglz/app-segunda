@@ -92,8 +92,7 @@ def reporte():
     total_gastos = 0
 
     for transaccion in transacciones:
-        c.drawString(100, y, f"{transaccion.tipo.title()}: {
-                     transaccion.categoria} - ${transaccion.monto} (Fecha: {transaccion.fecha})")
+        c.drawString(100, y, f"{transaccion.tipo.title()}: {transaccion.categoria} - ${transaccion.monto} (Fecha: {transaccion.fecha})")
         if transaccion.tipo == "ingreso":
             total_ingresos += transaccion.monto
         elif transaccion.tipo == "gasto":
@@ -106,8 +105,7 @@ def reporte():
     y -= 20
     c.drawString(100, y, f"Total de Gastos: ${total_gastos}")
     y -= 20
-    c.drawString(
-        100, y, f"Diferencia (Ingresos - Gastos): ${total_ingresos - total_gastos}")
+    c.drawString(100, y, f"Diferencia (Ingresos - Gastos): ${total_ingresos - total_gastos}")
 
     # Finalizar y guardar el PDF
     c.save()
