@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-center mb-4">Control de Finanzas Personales</h1>
+
+<!-- Formulario para registrar ingresos y gastos -->
+<form method="POST" action="/agregar" class="mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <select name="tipo" class="form-select" required>
+                <option value="ingreso">Ingreso</option>
+                <option value="gasto">Gasto</option>
+            </select>
+
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="categoria" class="form-control" placeholder="Categoría" required>
+        </div>
+        <div class="col-md-2">
+            <input type="number" step="0.01" name="monto" class="form-control" placeholder="Monto" required>
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="fecha" class="form-control" required>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary">Añadir</button>
+        </div>
+    </div>
+</form>
+
+<!-- Gráfica en tiempo real -->
+<canvas id="grafica" class="grafica-pie"></canvas>
+
+<!-- Script para generar la gráfica -->
+<script src="{{ url_for('static', filename='Chart.min.js') }}"></script>
+<script>
+    // Obtener datos de ingresos y gastos desde el servidor
+    fetch("/datos_grafica")
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('grafica').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Ingresos', 'Gastos'],
+                    datasets: [{
+                        data: [data.ingresos, data.gastos],
+                        backgroundColor: ['#4CAF50', '#FF5722']
+                    }]
+                }
+            });
+        });
+</script>
+
+<!-- Correccion de registros erroneos -->
+<h2 class="mt-5">Registros Existentes</h2>
+<button class="btn btn-secondary mb-3" onclick="toggleTable()">Mostrar/Ocultar Registros</button>
+
+<table id="tablaRegistros" class="table table-striped" style="display:none;">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Tipo</th>
+            <th>Categoría</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for transaccion in transacciones %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ transaccion.tipo.title() }}</td>
+            <td>{{ transaccion.categoria }}</td>
+            <td>${{ "%.2f"|format(transaccion.monto) }}</td>
+            <td>{{ transaccion.fecha }}</td>
+            <td>
+                <form method="POST" action="/eliminar" style="display:inline;">
+                    <input type="hidden" name="id" value="{{ transaccion.id }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    // Función para alternar la visibilidad de la tabla
+    function toggleTable() {
+        var table = document.getElementById("tablaRegistros");
+        table.classList.toggle("show");
+        if (table.style.display === "none") {
+            table.style.display = "table";  // Mostrar tabla
+        } else {
+            table.style.display = "none";  // Ocultar tabla
+        }
+    }
+</script>
+
+
+<!-- Generación del reporte -->
+<h2 class="mt-5">Generar Reporte</h2>
+<form method="GET" action="/reporte" class="row g-3">
+    <div class="col-md-4">
+        <input type="number" name="anio" class="form-control" placeholder="Año (e.g., 2024)" required>
+    </div>
+    <div class="col-md-4">
+        <input type="number" name="mes" class="form-control" placeholder="Mes (e.g., 11)" required>
+    </div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-primary">Descargar Reporte</button>
+    </div>
+</form>
+
+
+{% endblock %}

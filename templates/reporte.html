@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-center mb-4">Generar Reporte</h1>
+
+<!-- Formulario para seleccionar mes y año del reporte -->
+<form method="GET" action="/reporte/{{ anio }}/{{ mes }}">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="number" name="anio" class="form-control" placeholder="Año (e.g. 2024)" required>
+        </div>
+        <div class="col-md-6">
+            <input type="number" name="mes" class="form-control" placeholder="Mes (e.g. 11)" required>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Descargar Reporte</button>
+</form>
+{% endblock %}
