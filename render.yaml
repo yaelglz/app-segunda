@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: app-segunda
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: app-segunda-db
+          property: connectionString
+
+databases:
+  - name: app-segunda-db
+    databaseName: app_segunda
+    user: app_segunda_user
